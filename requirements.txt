@@ -1,4 +1,5 @@
 flask
 spacy
+en-core-web-sm
 textblob
 gunicorn
