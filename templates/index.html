@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chatbot - Mental Health Support</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-logo">
+            <a href="#">Mental Health Chatbot</a>
+        </div>
+        <ul class="navbar-links">
+            <li><a href="#about">About</a></li>
+            <li><a href="#chat">Chat</a></li>
+        </ul>
+    </nav>
+
+    <!-- About Section -->
+    <section id="about" class="about-section">
+        <div class="about-content">
+            <h2>About Our Chatbot</h2>
+            <p>This chatbot is designed to support and listen to individuals facing mental health challenges, especially teens and young adults. It provides a safe space for sharing thoughts and offers stress management strategies.</p>
+        </div>
+    </section>
+
+    <!-- Chatbot Section -->
+    <section id="chat" class="chat-container">
+        <div class="chat-header">
+            <h1>Mental Health Chatbot</h1>
+            <p>We're here to listen and support you.</p>
+        </div>
+        <div id="chat-box" class="chat-box"></div>
+        <div class="chat-input-container">
+            <input type="text" id="user-input" placeholder="How are you feeling today?" />
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </section>
+
+    <script>
+        async function sendMessage() {
+            const userInput = document.getElementById("user-input").value;
+            if (userInput.trim() === "") return;
+
+            // Append user's message
+            document.getElementById("chat-box").innerHTML += `
+                <div class="message user-message">
+                    <span>${userInput}</span>
+                </div>
+            `;
+            
+            // Scroll to bottom
+            document.getElementById("chat-box").scrollTop = document.getElementById("chat-box").scrollHeight;
+
+            // Show typing indicator
+            document.getElementById("chat-box").innerHTML += `
+                <div class="message bot-message bot-typing">
+                    <span>...</span>
+                </div>
+            `;
+
+            const response = await fetch("/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: userInput }),
+            });
+
+            const data = await response.json();
+
+            // Remove typing indicator and display response
+            document.getElementById("chat-box").lastElementChild.remove();
+            document.getElementById("chat-box").innerHTML += `
+                <div class="message bot-message">
+                    <span>${data.response}</span>
+                </div>
+            `;
+            
+            // Scroll to bottom again
+            document.getElementById("chat-box").scrollTop = document.getElementById("chat-box").scrollHeight;
+
+            // Clear input
+            document.getElementById("user-input").value = "";
+        }
+    </script>
+</body>
+</html>
